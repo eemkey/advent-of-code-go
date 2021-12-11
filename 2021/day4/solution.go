@@ -68,7 +68,7 @@ func getSumOfUnmarked(b board) int {
 	return sum
 }
 
-func drawNums(nums []int, boards []board) int {
+func drawNums1(nums []int, boards []board) int {
 	for _, drawnNum := range nums {
 		for boardsIdx := 0; boardsIdx < len(boards); boardsIdx++ {
 			isMarked := boards[boardsIdx].markBoard(drawnNum)
@@ -81,6 +81,35 @@ func drawNums(nums []int, boards []board) int {
 		}
 	}
 	return 0
+}
+
+func drawNums2(nums []int, boards []board) int {
+	winners := make([]bool, len(boards))
+	for _, drawnNum := range nums {
+		for boardsIdx := 0; boardsIdx < len(boards); boardsIdx++ {
+			isMarked := boards[boardsIdx].markBoard(drawnNum)
+			if isMarked {
+				if boards[boardsIdx].isWinner() {
+					winners[boardsIdx] = true
+					if allWinners(winners) {
+						sum := getSumOfUnmarked(boards[boardsIdx])
+						return sum * drawnNum
+					}
+				}
+			}
+		}
+	}
+	return 0
+}
+
+func allWinners(s []bool) bool {
+	count := 0
+	for _, el := range s {
+		if el {
+			count += 1
+		}
+	}
+	return count == len(s)
 }
 
 func (b *board) markBoard(drawnNum int) bool {
@@ -137,6 +166,7 @@ func checkLine(line []square) bool {
 
 func main() {
 	drawnNums, boards := importFile("./input.txt")
-	answer := drawNums(drawnNums, boards)
-	fmt.Println(answer)
+	firstPlace := drawNums1(drawnNums, boards)
+	lastPlace := drawNums2(drawnNums, boards)
+	fmt.Println(firstPlace, lastPlace)
 }
